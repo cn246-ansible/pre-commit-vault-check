@@ -17,7 +17,7 @@ red="$(tput setaf 1)"
 reset="$(tput sgr0)"
 yellow="$(tput setaf 3)"
 
-for f in $(git diff --cached --name-only | grep -E "${files_pattern}"); do
+for f in $(git diff --cached --diff-filter=d --name-only | grep -E "${files_pattern}"); do
   match=$(head -n1 "${f}" | grep --no-messages "${required}")
   if [ ! "${match}" ] ; then
     set -- "$@" "${f}"
