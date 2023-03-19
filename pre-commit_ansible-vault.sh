@@ -12,10 +12,19 @@
 files_pattern='.*vault.*\.*$'
 required='ANSIBLE_VAULT'
 exit_status=0
-bold="$(tput bold)"
-red="$(tput setaf 1)"
-reset="$(tput sgr0)"
-yellow="$(tput setaf 3)"
+
+code_red () {
+  tput bold
+  tput setaf 1
+  printf '%s\n' "${1}"
+  tput sgr0
+}
+
+code_yel () {
+  tput setaf 3
+  printf '%s\n' "${1}"
+  tput sgr0
+}
 
 for f in $(git diff --cached --diff-filter=d --name-only | grep -E "${files_pattern}"); do
   match=$(head -n1 "${f}" | grep --no-messages "${required}")
@@ -27,11 +36,11 @@ done
 
 if [ ! ${exit_status} = 0 ] ; then
   if [ -n "$*" ]; then
-    printf '%s\n' "${bold}${red}COMMIT REJECTED!${reset}"
+    code_red "COMMIT REJECTED!"
     printf '%s\n\n' "There are unencrypted ansible-vault files part of the commit:"
 
     for item in "$@"; do
-      printf '\t%s\n' "${yellow}unencrypted:   ${item}${reset}"
+      code_yel "unencrypted:   ${item}"
     done
 
     printf '\n%s\n' "Please encrypt them with 'ansible-vault encrypt <file>'"
