@@ -9,22 +9,11 @@
 #
 # File should be .git/hooks/pre-commit and executable
 
+. /usr/local/lib/color_text
+
 files_pattern='.*vault.*\.*$'
 required='ANSIBLE_VAULT'
 exit_status=0
-
-code_red () {
-  tput bold
-  tput setaf 1
-  printf '%s\n' "${1}"
-  tput sgr0
-}
-
-code_yel () {
-  tput setaf 3
-  printf '%s\n' "${1}"
-  tput sgr0
-}
 
 for f in $(git diff --cached --diff-filter=d --name-only | grep -E "${files_pattern}"); do
   match=$(head -n1 "${f}" | grep --no-messages "${required}")
