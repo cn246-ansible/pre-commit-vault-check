@@ -9,12 +9,15 @@
 #
 # File should be .git/hooks/pre-commit and executable
 
-. /usr/local/lib/color_text
-
 files_pattern='.*vault.*\.*$'
 required='ANSIBLE_VAULT'
 exit_status=0
 
+# colored output
+code_red () { tput setaf 1; printf '%s\n' "${1}"; tput sgr0; }
+code_yel () { tput setaf 3; printf '%s\n' "${1}"; tput sgr0; }
+
+# find modified vault files
 for f in $(git diff --cached --diff-filter=d --name-only | grep -E "${files_pattern}"); do
   match=$(head -n1 "${f}" | grep --no-messages "${required}")
   if [ ! "${match}" ] ; then
@@ -25,7 +28,7 @@ done
 
 if [ ! ${exit_status} = 0 ] ; then
   if [ -n "$*" ]; then
-    code_red "COMMIT REJECTED!"
+    code_red "[ERROR] COMMIT REJECTED!"
     printf '%s\n\n' "There are unencrypted ansible-vault files part of the commit:"
 
     for item in "$@"; do
